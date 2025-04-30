@@ -1,0 +1,31 @@
+
+body {
+    font-family: Arial;
+    background: #f4f4f4;
+    text-align: center;
+    margin-top: 50px;
+}
+.container {
+    background: white;
+    padding: 20px;
+    width: 400px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+textarea {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+button {
+    padding: 10px 20px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+.result {
+    margin-top: 20px;
+    font-size: 20px;
+}

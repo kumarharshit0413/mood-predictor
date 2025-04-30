@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mood Predictor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --container-bg: rgba(255, 255, 255, 0.15);
+      --text-color: #fff;
+      --input-bg: rgba(255, 255, 255, 0.9);
+      --button-bg: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    }
+    :root.dark {
+      --bg-gradient: linear-gradient(135deg, #333849 0%, #1a1f2b 100%);
+      --container-bg: rgba(50, 50, 60, 0.6);
+      --text-color: #eee;
+      --input-bg: rgba(60, 60, 70, 0.8);
+      --button-bg: linear-gradient(45deg, #44475a, #6272a4);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 200vh;
+      padding-bottom: 100px;
+    }
+
+    .bubble-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      animation: floatUp 10s infinite ease-in;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-200vh) scale(1.5); opacity: 0; }
+    }
+
+    .hidden { display: none; }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="text"], input[type="submit"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: var(--container-bg);
+      backdrop-filter: blur(10px);
+      padding: 60px;
+      border-radius: 30px;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.37);
+      border: 1px solid rgba(255,255,255,0.18);
+      text-align: center;
+      width: 90%;
+      max-width: 700px;
+      margin-top: 20vh;
+      z-index: 1;
+    }
+
+    .mood-section, .quote-section, .chart-section, .spotify-section,.chat-section,.delete-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 60px;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out, transform 0.5s ease;
+      transform: translateY(30px);
+    }
+    .visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #moodChart {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    }
+
+    input[type="text"], input[type="submit"] {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.2em;
+      border-radius: 12px;
+      border: none;
+      margin: 12px 0;
+    }
+
+    input[type="submit"] {
+      background: var(--button-bg);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .top-right-buttons {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999;
+    }
+
+    .theme-toggle {
+      background: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .delete-button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .quote-section p {
+      font-style: italic;
+      font-size: 1.5em;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: gray;
+    }
+
+  footer a {
+    color: #3498db;
+    text-decoration: none;
+    }
+
+  footer a:hover {
+    text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="bubble-animation">
+    <div class="bubble" style="width: 40px; height: 40px; left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 25%; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 30px; height: 30px; left: 50%; animation-delay: 5s;"></div>
+    <div class="bubble" style="width: 80px; height: 80px; left: 75%; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 50px; height: 50px; left: 90%; animation-delay: 4s;"></div>
+  </div>
+
+  <div class="top-right-buttons">
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  </div>
+
+  <div class="container">
+    <h1>🧠 AI Mood Predictor</h1>
+    <form method="POST" action="/predict" onsubmit="handleFormSubmit(event)">
+      <input type="text" name="text" id="textInput" placeholder="How are you feeling right now?" required>
+      <input type="submit" value="Predict Mood">
+    </form>
+  </div>
+
+  {% if mood %}
+    <div id="moodSection" class="mood-section visible">
+      <h2>You said: <strong>"{{ text }}"</strong></h2>
+      <p>Your Mood: <strong>{{ mood }}</strong></p>
+    </div>
+
+    {% if resource %}
+      <div id="quoteSection" class="quote-section visible">
+        {% if resource.type == 'quote' %}
+          <p style="font-style:italic">{{ resource.content }}</p>
+        {% elif resource.type == 'youtube' %}
+          <iframe width="100%" height="350" src="{{ resource.url }}" frameborder="0" allowfullscreen></iframe>
+        {% elif resource.type == 'breathing' %}
+          <video src="{{ resource.url }}" controls style="width:100%; border-radius:10px;"></video>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div id="chartSection" class="chart-section visible">
+      <canvas id="moodChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="delete-section visible" style="text-align:center;">
+      <form method="POST" action="/delete">
+        <input type="submit" value="Delete All Mood History" class="delete-button">
+      </form>
+    </div>
+
+    {% if spotify_url %}
+      <div id="spotifySection" class="spotify-section visible">
+        <iframe style="border-radius:12px" src="{{ spotify_url }}" width="100%" height="180" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    {% endif %}
+
+    <div id="chatSection" class="chat-section visible" style="text-align:center;">
+      <a href="https://chat.openai.com/" target="_blank">
+        <button style="
+          padding: 14px 28px;
+          border-radius: 12px;
+          background: linear-gradient(45deg, #6a11cb, #2575fc);
+          color: white;
+          font-size: 1.1em;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        ">
+          Talk to ChatGPT 🤖
+        </button>
+      </a>
+    </div>
+  {% endif %}
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const dark = html.classList.toggle('dark');
+      html.classList.toggle('light', !dark);
+      document.querySelector('.theme-toggle').textContent = dark ? '☀️' : '🌙';
+    }
+
+    function handleFormSubmit(event) {
+      setTimeout(() => {
+        document.getElementById('moodSection')?.classList.add('visible');
+        document.getElementById('quoteSection')?.classList.add('visible');
+        document.getElementById('chartSection')?.classList.add('visible');
+        document.querySelector('.delete-section')?.classList.add('visible');
+        document.getElementById('spotifySection')?.classList.add('visible');
+        document.getElementById('chatSection')?.classList.add('visible');
+        document.getElementById('moodSection')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    const moodScores = {
+      "Happy 😊": 5,
+      "Surprised 😮": 4,
+      "Neutral 😐": 3,
+      "Fearful 😨": 2.5,
+      "Disgusted 🤢": 2,
+      "Sad 😢": 1.5,
+      "Angry 😠": 1
+    };
+
+    const moodColors = {
+      5: "#4caf50",
+      4: "#00bcd4",
+      3: "#ffc107",
+      2.5: "#ff9800",
+      2: "#ff9800",
+      1.5: "#2196f3",
+      1: "#f44336"
+    };
+
+    fetch("/history")
+    .then(response => response.json())
+    .then(data => {
+      const labels = data.map(item => new Date(item[0]).toLocaleString());
+      const scores = data.map(item => moodScores[item[1]]); // Convert mood names to scores
+
+      const ctx = document.getElementById("moodChart")?.getContext("2d");
+      if (ctx) {
+        // Create gradient for the line
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(100, 255, 255, 0.8)');
+        gradient.addColorStop(1, 'rgba(40, 150, 255, 0.2)');
+
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "Mood Score",
+              data: scores,
+              borderColor: gradient,
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: scores.map(s => {
+              // Round to nearest score for color mapping
+              const roundedScore = Math.round(s * 2) / 2; // Rounds to nearest 0.5
+              return moodColors[roundedScore] || "#ccc";
+            }),
+              pointBorderColor: 'white',
+              pointHoverRadius: 8,
+              fill: true,
+              backgroundColor: 'rgba(100, 255, 255, 0.1)',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const score = context.parsed.y;
+                  // Find the mood with the closest score
+                  const moodEntry = Object.entries(moodScores)
+                    .sort((a, b) => Math.abs(a[1] - score) - Math.abs(b[1] - score))[0];
+                  return moodEntry ? moodEntry[0] : '';
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                min: 0.5,
+                max: 5.5,
+                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                ticks: {
+                  color: "#ccc",
+                  callback: (value) => {
+                    const moodEntry = Object.entries(moodScores)
+                      .find(([mood, score]) => score === value);
+                    return moodEntry ? moodEntry[0] : '';
+                  },
+                  stepSize: 0.5
+                }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { 
+                  color: "#ccc",
+                  maxTicksLimit: 6,
+                  autoSkip: true
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+
+  <footer>
+    Developed by <a href="{{ url_for('portfolio') }}" target="_blank">Harshit</a>
+  </footer>
+</body>
+</html>

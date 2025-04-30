@@ -1,0 +1,31 @@
+{
+    "Happy 😊": {
+      "type": "quote",
+      "content": "“Happiness is not by chance, but by choice.” – Jim Rohn"
+    },
+    "Sad 😢": {
+      "type": "quote",
+      "content": "“This too shall pass.” – Persian Proverb"
+    },
+    "Angry 😠": {
+      "type": "quote",
+      "content": "“You will not be punished for your anger , you will be punished by your anger.”-Buddha"
+    },
+    "Fearful 😨": {
+      "type": "youtube",
+      "content": "https://www.youtube.com/watch?v=j5-yKhDd64s"  
+    },
+    "Disgusted 🤢": {
+      "type": "quote",
+      "content": "“Keep your face always toward the sunshine—and shadows will fall behind you.” – Walt Whitman"
+    },
+    "Surprised 😮": {
+      "type": "youtube",
+      "content": "https://www.youtube.com/embed/ScMzIvxBSi4"  
+    },
+    "Neutral 😐": {
+      "type": "quote",
+      "content": "“Every moment is a fresh beginning.” – T.S. Eliot"
+    }
+  }
+  
