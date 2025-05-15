@@ -18,8 +18,8 @@ An AI-powered web app that detects your mood based on text input and offers cura
 ## 🛠️ Setup Instructions
 
 ### 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-cd YOUR_REPOSITORY_NAME
+git clone https://github.com/kumarharshit0413/mood-predictor.git
+cd mood-predictor
 
 ### 2. Create virtual environment (optional but recommended)
 python -m venv venv
